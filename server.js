@@ -6,7 +6,7 @@ const { buildMp4FromAnnexB } = require("./h264-mp4");
 const { UBoxLiveStreamManager } = require("./ubox-live-stream");
 const { RtspServer } = require("./rtsp-server");
 
-const HOST = "127.0.0.1";
+const HOST = "0.0.0.0";
 const PORT = Number(process.env.PORT || 48263);
 const DEV_SERVER = process.argv.includes("--dev") || process.env.NODE_ENV === "development" || process.env.VITE_DEV === "1";
 const UBOX_API = process.env.UBOX_API || "https://portal.ubianet.com";
@@ -15,6 +15,7 @@ const APP_VERSION = process.env.UBOX_APP_VERSION || "1.1.363";
 const DEFAULT_LANG = process.env.UBOX_LANG || "en";
 const DEFAULT_REGION = process.env.UBOX_REGION || "US";
 const AUTH_FILE = process.env.UBOX_AUTH_FILE || path.join(__dirname, ".ubox-auth.json");
+const LOGS = process.env.LOGS === 'true';
 
 let savedAuth = loadSavedAuth();
 let session = restoreSessionFromSavedAuth();
@@ -31,6 +32,8 @@ const liveStreams = new UBoxLiveStreamManager({
   dumpDir: path.join(__dirname, "live-dumps"),
   logDir: path.join(__dirname, "live-session-logs"),
   rtsp: rtspServer,
+  enableSessionLogs: LOGS,
+  enableDumpFiles: LOGS
 });
 
 function hashPassword(password) {
