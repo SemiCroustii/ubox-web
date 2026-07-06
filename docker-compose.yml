@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    container_name: ubox-web
+    ports:
+      - "8554:8554"
+      - "48263:48263"
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
