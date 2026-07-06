@@ -4,6 +4,7 @@ const path = require("path");
 const crypto = require("crypto");
 const { buildMp4FromAnnexB } = require("./h264-mp4");
 const { UBoxLiveStreamManager } = require("./ubox-live-stream");
+const { RtspServer } = require("./rtsp-server");
 
 const HOST = "127.0.0.1";
 const PORT = Number(process.env.PORT || 48263);
@@ -19,9 +20,17 @@ let savedAuth = loadSavedAuth();
 let session = restoreSessionFromSavedAuth();
 let viteDevServer = null;
 const CAPTURE_DIR = path.join(__dirname, "..", "ubox-stream-re", "smali-dumps", "ubox-smali-dump");
+const rtspServer = new RtspServer({
+  port: Number(process.env.RTSP_PORT || 8554),
+  basePath: process.env.RTSP_PATH || "/live",
+  auth: process.env.RTSP_USER && process.env.RTSP_PASS
+    ? { user: process.env.RTSP_USER, pass: process.env.RTSP_PASS }
+    : null,
+});
 const liveStreams = new UBoxLiveStreamManager({
   dumpDir: path.join(__dirname, "live-dumps"),
   logDir: path.join(__dirname, "live-session-logs"),
+  rtsp: rtspServer,
 });
 
 function hashPassword(password) {
@@ -553,6 +562,8 @@ async function start() {
     if (DEV_SERVER) console.log("Vite HMR is enabled.");
     console.log(`Saved login state is stored locally at ${AUTH_FILE}`);
   });
+
+  rtspServer.listen();
 }
 
 start().catch((error) => {

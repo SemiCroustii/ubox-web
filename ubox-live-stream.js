@@ -410,7 +410,7 @@ function parseRdtBlock(record) {
 }
 
 class UBoxLiveStreamManager {
-  constructor({ dumpDir, logDir, defaultOptions = {} }) {
+  constructor({ dumpDir, logDir, defaultOptions = {}, rtsp = null }) {
     this.dumpDir = dumpDir;
     this.logDir = logDir || path.join(dumpDir, "..", "live-session-logs");
     this.defaultOptions = { ...DEFAULT_STREAM_OPTIONS, ...defaultOptions };
@@ -421,6 +421,7 @@ class UBoxLiveStreamManager {
     this.sessionLogBuffer = [];
     this.sessionLogTimer = null;
     this.restartPromise = null;
+    this.rtsp = rtsp
     fs.mkdirSync(this.logDir, { recursive: true });
   }
 
@@ -2185,6 +2186,7 @@ class UBoxLiveStreamSession {
     this.lastH264At = Date.now();
     const state = this.h264Track(track);
     state.backlog.push(annexB);
+    if (this.manager.rtsp) this.manager.rtsp.pushFrame(track, annexB);
     state.backlog = state.backlog.slice(-450);
     const packet = framePacket(annexB);
     for (const client of [...state.clients]) {
