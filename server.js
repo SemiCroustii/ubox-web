@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const { buildMp4FromAnnexB } = require("./h264-mp4");
 const { UBoxLiveStreamManager } = require("./ubox-live-stream");
 const { RtspServer } = require("./rtsp-server");
+require('dotenv').config({ quiet: true })
 
 const HOST = "0.0.0.0";
 const PORT = Number(process.env.PORT || 48263);

@@ -12,6 +12,7 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "dotenv": "^17.4.2",
     "kcpjs": "^1.0.12",
     "svelte": "^5.0.0",
     "uplot": "^1.6.32"
